@@ -16,6 +16,7 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { CreateOutfit } from './pages/Dashboard/CreateOutfit';
 
 // Create a client
 const queryClient = new QueryClient()
@@ -42,6 +43,16 @@ function App() {
               </>
             }
           />
+          <Route
+            path='/create'
+            element={
+              <>
+                <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                <CreateOutfit />
+              </>
+            }
+          />
+
           <Route
             path="/calendar"
             element={

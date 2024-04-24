@@ -14,6 +14,7 @@ import ProductFour from '../../images/product/product-04.png';
 import { useQuery } from 'react-query';
 import Loader from '../../common/Loader';
 import { getOutfits } from '../../firebase';
+import { Link } from 'react-router-dom';
 
 const outfitsQuery = async () => {
   const res = await getOutfits()
@@ -33,10 +34,17 @@ const Ambiances = () => {
     <Loader /> 
   ) : (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="py-6 px-4 md:px-6 xl:px-7.5">
+      <div className="flex justify-between items-center py-6 px-4 md:px-6 xl:px-7.5">
         <h4 className="text-xl font-semibold text-black dark:text-white">
           Top Products
         </h4>
+
+        <Link
+          to="/create"
+          className="inline-flex items-center justify-center rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+        >
+          Create
+        </Link>
       </div>
 
       <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">

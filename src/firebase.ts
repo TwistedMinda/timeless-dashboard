@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import { collection, getDocs, getFirestore, query } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore, query } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDz0meh2Yp9qO0UjLJgeNm09DlNMRTXBpg",
@@ -32,6 +32,15 @@ export const getOutfits = async () => {
       })
     });
     return list
+  } catch (e) {
+    console.error("Error fetching document: ", e);
+  }
+  return []
+}
+
+export const createOutfit = async (data: any) => {
+  try {
+    await addDoc(collection(db, 'outfits'), data)
   } catch (e) {
     console.error("Error adding document: ", e);
   }
