@@ -11,6 +11,14 @@ import ProductOne from '../../images/product/product-01.png';
 import ProductTwo from '../../images/product/product-02.png';
 import ProductThree from '../../images/product/product-03.png';
 import ProductFour from '../../images/product/product-04.png';
+import { useQuery } from 'react-query';
+import Loader from '../../common/Loader';
+import { getOutfits } from '../../firebase';
+
+const outfitsQuery = async () => {
+  const res = await getOutfits()
+  return res as Ambiance[]
+}
 
 interface Ambiance {
   name: string
@@ -19,29 +27,11 @@ interface Ambiance {
 }
 
 const Ambiances = () => {
-  const productData: Ambiance[] = [
-    {
-      image: ProductOne,
-      name: 'Apple Watch Series 7',
-      category: 'Electronics',
-    },
-    {
-      image: ProductTwo,
-      name: 'Macbook Pro M1',
-      category: 'Electronics',
-    },
-    {
-      image: ProductThree,
-      name: 'Dell Inspiron 15',
-      category: 'Electronics',
-    },
-    {
-      image: ProductFour,
-      name: 'HP Probook 450',
-      category: 'Electronics',
-    },
-  ]
-  return (
+  const { data = [], isLoading } = useQuery('outfits', outfitsQuery)
+
+  return isLoading ? (
+    <Loader /> 
+  ) : (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="py-6 px-4 md:px-6 xl:px-7.5">
         <h4 className="text-xl font-semibold text-black dark:text-white">
@@ -58,7 +48,7 @@ const Ambiances = () => {
         </div>
       </div>
 
-      {productData.map((product, key) => (
+      {data.map((product, key) => (
         <div
           className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
           key={key}
