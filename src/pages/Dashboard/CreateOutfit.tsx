@@ -1,19 +1,8 @@
-import React, { useState } from 'react';
-import CardDataStats from '../../components/CardDataStats';
-import ChartOne from '../../components/Charts/ChartOne';
-import ChartThree from '../../components/Charts/ChartThree';
-import ChartTwo from '../../components/Charts/ChartTwo';
-import ChatCard from '../../components/Chat/ChatCard';
-import MapOne from '../../components/Maps/MapOne';
-import TableOne from '../../components/Tables/TableOne';
+import React, { ChangeEventHandler, useState } from 'react';
 import DefaultLayout from '../../layout/DefaultLayout';
-import ProductOne from '../../images/product/product-01.png';
-import ProductTwo from '../../images/product/product-02.png';
-import ProductThree from '../../images/product/product-03.png';
-import ProductFour from '../../images/product/product-04.png';
-import { useMutation, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import Loader from '../../common/Loader';
-import { createOutfit, getOutfits } from '../../firebase';
+import { createOutfit, getOutfits, storeFile } from '../../firebase';
 import { Link } from 'react-router-dom';
 
 const outfitsQuery = async () => {
@@ -21,7 +10,11 @@ const outfitsQuery = async () => {
   return res as Ambiance[]
 }
 
-const saveOutfit = async (ambiance: Ambiance) => {
+const saveOutfit = async (ambiance: Ambiance, file?: File) => {
+  if (file) {
+    const picture = await storeFile(file)
+    ambiance.image = picture
+  }
   await createOutfit(ambiance)
 }
 
@@ -57,6 +50,30 @@ const DefaultInput = ({
   )
 }
 
+
+
+const FileInput = ({
+  title,
+  onChange
+}: {
+  title: string
+  value: string
+  onChange?: ChangeEventHandler
+}) => {
+  return (
+    <div>
+      <label className="mb-3 block text-black dark:text-white">
+        {title}
+      </label>
+      <input
+        type="file"
+        onChange={onChange}
+        className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+      />
+    </div>
+  )
+}
+
 const initialState = {
   name: '',
   season: '',
@@ -67,17 +84,24 @@ const CreateOutfitContent = () => {
   const { data = [], isLoading } = useQuery('outfits', outfitsQuery)
 
   const [info, setInfo] = useState<Ambiance>(initialState)
+  const [file, setFile] = useState<any>(undefined)
 
   const onFinish = async () => {
-    await saveOutfit(info)
+    await saveOutfit(info, file)
     console.log('success', info)
     setInfo(initialState)
+    setFile(undefined)
   }
 
   const onChange = (key: string, value: string) => {
     setInfo({ ...info, [key]: value })
   }
-
+  
+  const onFileChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target?.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+};
   return isLoading ? (
     <Loader /> 
   ) : (
@@ -97,9 +121,10 @@ const CreateOutfitContent = () => {
       </div>
 
       <div className='px-6 pb-6'>
-        <DefaultInput title='Name' value={info.name} onChange={(val) => onChange('name', val)} />
-        <DefaultInput title='Season' value={info.season}  onChange={(val) => onChange('season', val)} />
-        <DefaultInput title='Weather' value={info.weather} onChange={(val) => onChange('weather', val)} />
+        <DefaultInput title='Name' value={info.name} onChange={val => onChange('name', val)} />
+        <DefaultInput title='Season' value={info.season}  onChange={val => onChange('season', val)} />
+        <DefaultInput title='Weather' value={info.weather} onChange={val => onChange('weather', val)} />
+        <FileInput title='Background' onChange={onFileChange} />
       </div>
     </div>
   )

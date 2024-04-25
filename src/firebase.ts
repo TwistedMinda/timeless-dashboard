@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { addDoc, collection, getDocs, getFirestore, query } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDz0meh2Yp9qO0UjLJgeNm09DlNMRTXBpg",
@@ -13,11 +14,17 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-
 export const app = initializeApp(firebaseConfig);
-
-// Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
+export const storage = getStorage(app)
+
+export const storeFile = async (file: File) => {
+  const storageRef = ref(storage, `outfits/${file.name}`);
+  await uploadBytes(storageRef, file);
+  console.log('uploaded!')
+  const fileUrl = await getDownloadURL(storageRef)
+  return fileUrl
+}
 
 export const getOutfits = async () => {
   try {
